@@ -8,11 +8,11 @@ A compact, production-oriented pipeline to:
 
 ##### **Scripts:**
 
-- `**build_manifest_from_segy.py**` — walks each geometry, opens station SEG-Y files, aligns shots to the geometry’s JSON shot list, and writes a `picks_manifest.csv` with `geometry`, `station`, `segy_path`, `trace_index`, `shot_id`, `pick_time_s`. When a SEG-Y lacks usable shot headers it falls back to a tolerant index alignment and logs mismatches.
+-** `build_manifest_from_segy.py`** — walks each geometry, opens station SEG-Y files, aligns shots to the geometry’s JSON shot list, and writes a `picks_manifest.csv` with `geometry`, `station`, `segy_path`, `trace_index`, `shot_id`, `pick_time_s`. When a SEG-Y lacks usable shot headers it falls back to a tolerant index alignment and logs mismatches.
 
-- `**etl_to_wds_from_manifest.py**` — one-time ETL that reads the per-geometry manifest and emits **WDS** shards (`.tar` of `.npz`). Each sample holds the feature tensor `x (C,T)`, supervision (`y_mask`, `has_pick`, `y_idx`) and `fs`. Includes options for cropping around picks, STA/LTA-gated negatives, fixed windows, and pos:neg capping. Key knobs: target length, window mode, ±pick window, and neg:pos ratio cap.
+- **`etl_to_wds_from_manifest.py`** — one-time ETL that reads the per-geometry manifest and emits **WDS** shards (`.tar` of `.npz`). Each sample holds the feature tensor `x (C,T)`, supervision (`y_mask`, `has_pick`, `y_idx`) and `fs`. Includes options for cropping around picks, STA/LTA-gated negatives, fixed windows, and pos:neg capping. Key knobs: target length, window mode, ±pick window, and neg:pos ratio cap.
 
-- `**ML-pipe-trns-uncrtnNoise.py**` — WDS training loop with rich tqdm bars. The model predicts (mean pick, log-σ); training uses Gaussian NLL (noise-aware) and we learn to abstain on high uncertainty. After training, a conformal pass calibrates a 90% z-quantile `q` for interval width.
+- **`ML-pipe-trns-uncrtnNoise.py`** — WDS training loop with rich tqdm bars. The model predicts (mean pick, log-σ); training uses Gaussian NLL (noise-aware) and we learn to abstain on high uncertainty. After training, a conformal pass calibrates a 90% z-quantile `q` for interval width.
 
 ##### **Data layout expected by the ETL**
 ```
