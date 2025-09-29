@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu            ### Partition (like a queue in PBS)
+#SBATCH --gres=gpu:1	   ### General Reservation of gpu:number of gpus
+#SBATCH --job-name=ML-P-picker     ### Job Name
+#SBATCH --output=logs/ml.out       ### File in which to store job output
+#SBATCH --error=logs/ml.err        ### File in which to store job error messages
+#SBATCH --time=1-00:00:00          ### Wall clock time limit in Days-HH:MM:SS
+#SBATCH --nodes=1                  ### Node count required for the job
+#SBATCH --ntasks-per-node=1        ### Number of tasks to be launched per Node
+#SBATCH --cpus-per-task=1          ### Number of cpus/cores to be launched per Task
+
+set -euo pipefail
+
+source ~/proteus/miniconda3/etc/profile.d/conda.sh
+conda activate ~/proteus/miniconda3/envs/ml_picker
+
+# optional: match thread env to cpus-per-task
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export MKL_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
+srun python -u ML-pipe-trns-uncrtnNoise.py

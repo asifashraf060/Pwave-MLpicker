@@ -1,0 +1,1 @@
+rsync -avP --exclude 'ML-feed' aashraf@login.talapas.uoregon.edu:~/ML-dir/p-picker/ /Users/asifashraf/Documents/code_repo/Pwave-MLpicker/

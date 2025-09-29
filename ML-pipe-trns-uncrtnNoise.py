@@ -1031,7 +1031,7 @@ if __name__ == "__main__":
     # ═══════════════════════════════════════════════════════════════════════════════════
     # SINGLE-ENTRY RUNNER (no CLI needed): set ROOT once, script finds everything else
     # ═══════════════════════════════════════════════════════════════════════════════════
-    ROOT = "/Volumes/Asif_disk1/Data-feed/ML-feed"   # ← set this to your ML-feed root (absolute or relative)
+    ROOT = "ML-feed"   # ← set this to your ML-feed root (absolute or relative)
 
     # Model/training knobs
     NUM_HEADS     = 2

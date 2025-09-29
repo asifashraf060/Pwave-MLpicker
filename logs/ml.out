@@ -1,0 +1,211 @@
+Geometries: SO-SG1
+Shards: train=19  val=2
+================================================================================
+WDS PICKER w/ UNCERTAINTY (mean + logσ, selective abstention)
+================================================================================
+Input channels (from shard): 7
+Total train batches: 1701, Total val batches: 285
+Max Epochs: 100
+Starting training epoch 1 with 1701 batches
+[001/100] train=2.1848  val=0.8828
+Starting training epoch 2 with 1701 batches
+[002/100] train=1.6914  val=0.7787
+Starting training epoch 3 with 1701 batches
+[003/100] train=0.9398  val=0.4140
+Starting training epoch 4 with 1701 batches
+[004/100] train=0.5948  val=0.3173
+Starting training epoch 5 with 1701 batches
+[005/100] train=0.4852  val=0.2730
+Starting training epoch 6 with 1701 batches
+[006/100] train=0.4067  val=0.3427
+Starting training epoch 7 with 1701 batches
+[007/100] train=0.3844  val=0.2555
+Starting training epoch 8 with 1701 batches
+[008/100] train=0.3526  val=0.2557
+Starting training epoch 9 with 1701 batches
+[009/100] train=0.3397  val=0.3171
+Starting training epoch 10 with 1701 batches
+[010/100] train=0.3297  val=0.2791
+Starting training epoch 11 with 1701 batches
+[011/100] train=0.3269  val=0.2681
+Starting training epoch 12 with 1701 batches
+[012/100] train=0.3336  val=0.3709
+Starting training epoch 13 with 1701 batches
+[013/100] train=0.3330  val=0.3945
+Starting training epoch 14 with 1701 batches
+[014/100] train=0.3236  val=0.2572
+Starting training epoch 15 with 1701 batches
+[015/100] train=0.3150  val=0.2708
+Starting training epoch 16 with 1701 batches
+[016/100] train=0.3247  val=0.3157
+Starting training epoch 17 with 1701 batches
+[017/100] train=0.3218  val=0.2586
+Starting training epoch 18 with 1701 batches
+[018/100] train=0.3201  val=0.2789
+Starting training epoch 19 with 1701 batches
+[019/100] train=0.3124  val=0.2584
+Starting training epoch 20 with 1701 batches
+[020/100] train=0.3159  val=0.2680
+Starting training epoch 21 with 1701 batches
+[021/100] train=0.3191  val=0.2584
+Starting training epoch 22 with 1701 batches
+[022/100] train=0.3111  val=0.2543
+Starting training epoch 23 with 1701 batches
+[023/100] train=0.3141  val=0.2659
+Starting training epoch 24 with 1701 batches
+[024/100] train=0.3139  val=0.2571
+Starting training epoch 25 with 1701 batches
+[025/100] train=0.3064  val=0.2533
+Starting training epoch 26 with 1701 batches
+[026/100] train=0.3094  val=0.2854
+Starting training epoch 27 with 1701 batches
+[027/100] train=0.3155  val=0.2675
+Starting training epoch 28 with 1701 batches
+[028/100] train=0.3066  val=0.3024
+Starting training epoch 29 with 1701 batches
+[029/100] train=0.3038  val=0.2558
+Starting training epoch 30 with 1701 batches
+[030/100] train=0.3038  val=0.2639
+Starting training epoch 31 with 1701 batches
+[031/100] train=0.3033  val=0.2784
+Starting training epoch 32 with 1701 batches
+[032/100] train=0.3052  val=0.2622
+Starting training epoch 33 with 1701 batches
+[033/100] train=0.3055  val=0.2567
+Starting training epoch 34 with 1701 batches
+[034/100] train=0.3026  val=0.3031
+Starting training epoch 35 with 1701 batches
+[035/100] train=0.3048  val=0.2755
+Starting training epoch 36 with 1701 batches
+[036/100] train=0.3035  val=0.2870
+Starting training epoch 37 with 1701 batches
+[037/100] train=0.3016  val=0.2790
+Starting training epoch 38 with 1701 batches
+[038/100] train=0.3004  val=0.2594
+Starting training epoch 39 with 1701 batches
+[039/100] train=0.3013  val=0.2877
+Starting training epoch 40 with 1701 batches
+[040/100] train=0.3022  val=0.2550
+Starting training epoch 41 with 1701 batches
+[041/100] train=0.3035  val=0.2528
+Starting training epoch 42 with 1701 batches
+[042/100] train=0.3029  val=0.2625
+Starting training epoch 43 with 1701 batches
+[043/100] train=0.3010  val=0.2719
+Starting training epoch 44 with 1701 batches
+[044/100] train=0.3013  val=0.2951
+Starting training epoch 45 with 1701 batches
+[045/100] train=0.2989  val=0.2529
+Starting training epoch 46 with 1701 batches
+[046/100] train=0.2996  val=0.2631
+Starting training epoch 47 with 1701 batches
+[047/100] train=0.2998  val=0.2585
+Starting training epoch 48 with 1701 batches
+[048/100] train=0.2985  val=0.3452
+Starting training epoch 49 with 1701 batches
+[049/100] train=0.3018  val=0.2555
+Starting training epoch 50 with 1701 batches
+[050/100] train=0.2982  val=0.2557
+Starting training epoch 51 with 1701 batches
+[051/100] train=0.3024  val=0.2572
+Starting training epoch 52 with 1701 batches
+[052/100] train=0.3016  val=0.2847
+Starting training epoch 53 with 1701 batches
+[053/100] train=0.2983  val=0.2570
+Starting training epoch 54 with 1701 batches
+[054/100] train=0.2999  val=0.2564
+Starting training epoch 55 with 1701 batches
+[055/100] train=0.3000  val=0.2544
+Starting training epoch 56 with 1701 batches
+[056/100] train=0.2987  val=0.2570
+Starting training epoch 57 with 1701 batches
+[057/100] train=0.2988  val=0.2656
+Starting training epoch 58 with 1701 batches
+[058/100] train=0.2994  val=0.2693
+Starting training epoch 59 with 1701 batches
+[059/100] train=0.2980  val=0.2536
+Starting training epoch 60 with 1701 batches
+[060/100] train=0.2982  val=0.2561
+Starting training epoch 61 with 1701 batches
+[061/100] train=0.2963  val=0.2558
+Starting training epoch 62 with 1701 batches
+[062/100] train=0.2981  val=0.2566
+Starting training epoch 63 with 1701 batches
+[063/100] train=0.2988  val=0.2548
+Starting training epoch 64 with 1701 batches
+[064/100] train=0.2999  val=0.2543
+Starting training epoch 65 with 1701 batches
+[065/100] train=0.2987  val=0.2533
+Starting training epoch 66 with 1701 batches
+[066/100] train=0.2978  val=0.2529
+Starting training epoch 67 with 1701 batches
+[067/100] train=0.2983  val=0.2530
+Starting training epoch 68 with 1701 batches
+[068/100] train=0.2955  val=0.2527
+Starting training epoch 69 with 1701 batches
+[069/100] train=0.2959  val=0.2536
+Starting training epoch 70 with 1701 batches
+[070/100] train=0.2980  val=0.2547
+Starting training epoch 71 with 1701 batches
+[071/100] train=0.2957  val=0.2536
+Starting training epoch 72 with 1701 batches
+[072/100] train=0.2957  val=0.2528
+Starting training epoch 73 with 1701 batches
+[073/100] train=0.2957  val=0.2530
+Starting training epoch 74 with 1701 batches
+[074/100] train=0.2976  val=0.3162
+Starting training epoch 75 with 1701 batches
+[075/100] train=0.2976  val=0.2671
+Starting training epoch 76 with 1701 batches
+[076/100] train=0.2950  val=0.2533
+Starting training epoch 77 with 1701 batches
+[077/100] train=0.2952  val=0.2556
+Starting training epoch 78 with 1701 batches
+[078/100] train=0.2949  val=0.2540
+Starting training epoch 79 with 1701 batches
+[079/100] train=0.2948  val=0.2538
+Starting training epoch 80 with 1701 batches
+[080/100] train=0.2950  val=0.2534
+Starting training epoch 81 with 1701 batches
+[081/100] train=0.2959  val=0.2529
+Starting training epoch 82 with 1701 batches
+[082/100] train=0.2964  val=0.2631
+Starting training epoch 83 with 1701 batches
+[083/100] train=0.2969  val=0.2557
+Starting training epoch 84 with 1701 batches
+[084/100] train=0.2972  val=0.2529
+Starting training epoch 85 with 1701 batches
+[085/100] train=0.2946  val=0.2596
+Starting training epoch 86 with 1701 batches
+[086/100] train=0.2953  val=0.2535
+Starting training epoch 87 with 1701 batches
+[087/100] train=0.2981  val=0.2556
+Starting training epoch 88 with 1701 batches
+[088/100] train=0.2960  val=0.2530
+Starting training epoch 89 with 1701 batches
+[089/100] train=0.2952  val=0.2610
+Starting training epoch 90 with 1701 batches
+[090/100] train=0.2954  val=0.2582
+Starting training epoch 91 with 1701 batches
+[091/100] train=0.2949  val=0.2560
+Starting training epoch 92 with 1701 batches
+[092/100] train=0.2949  val=0.2590
+Starting training epoch 93 with 1701 batches
+[093/100] train=0.2951  val=0.2549
+Starting training epoch 94 with 1701 batches
+[094/100] train=0.2931  val=0.2770
+Starting training epoch 95 with 1701 batches
+[095/100] train=0.2945  val=0.2532
+Starting training epoch 96 with 1701 batches
+[096/100] train=0.2943  val=0.2533
+Starting training epoch 97 with 1701 batches
+[097/100] train=0.2982  val=0.2708
+Starting training epoch 98 with 1701 batches
+[098/100] train=0.2959  val=0.2529
+Starting training epoch 99 with 1701 batches
+[099/100] train=0.2937  val=0.2545
+Starting training epoch 100 with 1701 batches
+[100/100] train=0.2944  val=0.2528
+Conformal 90% z-quantile: q=0.016
+Saved model to picker_wds_conformal.pt
+[eval] saved 20 figure(s) to evaluate_picks

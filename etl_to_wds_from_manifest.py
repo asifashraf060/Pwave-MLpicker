@@ -234,7 +234,8 @@ def smooth(x: np.ndarray, w: int) -> np.ndarray:
     w = max(1, int(w))
     return _movmean(x, w)
 
-def build_features(seg: np.ndarray, fs: float, noise_end_idx: int = None) -> np.ndarray:
+def build_features(seg: np.ndarray, fs: float, pick_time_in_seg: float = None,
+                  seg_start_time: float = 0.0) -> np.ndarray:
     """
     Returns (C,T) features derived entirely from the 3–12 Hz band-passed signal.
     Channels (7):
@@ -244,7 +245,18 @@ def build_features(seg: np.ndarray, fs: float, noise_end_idx: int = None) -> np.
       3: envelope
       4: band env mid (smoothed envelope)
       5: maxamp sliding std
-      6: SNR (scalar rms(bp)/baseline_noise_std, broadcast across T)
+      6: SNR (pick-centric robust amplitude / quiet baseline, broadcast across T)
+
+    Parameters:
+    -----------
+    seg : np.ndarray
+        Waveform segment
+    fs : float
+        Sampling rate
+    pick_time_in_seg : float, optional
+        Pick time relative to start of segment (seconds). If None, uses 2/3 of segment length.
+    seg_start_time : float
+        Start time of segment relative to full trace (for debugging)
     """
     x = np.asarray(seg, dtype=np.float32)
     T = x.size
@@ -268,13 +280,74 @@ def build_features(seg: np.ndarray, fs: float, noise_end_idx: int = None) -> np.
     win_std = max(3, int(0.10 * fs))  # ~100 ms
     maxamp_std = sliding_std(np.abs(bp), win_std).astype(np.float32)
 
-    # --- SNR: scalar from pre-pick baseline noise ---
-    if noise_end_idx is None or noise_end_idx <= 1:
-        noise_end_idx = max(1, int(0.5 * fs))  # fallback baseline 0.5 s
-    baseline_std = robust_std(bp[:int(noise_end_idx)]) + 1e-6   # scalar (not a channel)
-    rms_bp = float(np.sqrt(np.mean(bp.astype(np.float32)**2) + 1e-12))
-    snr_scalar = float(rms_bp / baseline_std)
-    snr_arr = np.full((T,), snr_scalar, dtype=np.float32)       # broadcast across time
+    # --- New Pick-Centric SNR Calculation ---
+    if pick_time_in_seg is None:
+        # Fallback: use 2/3 of segment length as time mark
+        pick_time_in_seg = (2.0/3.0) * T / fs
+
+    pick_idx = int(round(pick_time_in_seg * fs))
+
+    # Check bounds
+    if pick_idx < 0 or pick_idx >= T:
+        raise ValueError(f"Pick time {pick_time_in_seg}s (idx {pick_idx}) exceeds segment bounds [0, {T/fs:.2f}s]")
+
+    # Signal window: [pick-0.3s, pick+0.5s]
+    sig_start_idx = max(0, pick_idx - int(0.3 * fs))
+    sig_end_idx = min(T, pick_idx + int(0.5 * fs))
+
+    if sig_end_idx <= sig_start_idx:
+        raise ValueError(f"Invalid signal window around pick at {pick_time_in_seg}s")
+
+    # Numerator: 92nd percentile of |bp| in signal window
+    signal_window = np.abs(bp[sig_start_idx:sig_end_idx])
+    signal_amplitude = float(np.percentile(signal_window, 92))
+
+    # Denominator: Find quiet 1-second baseline using STA/LTA gating
+    baseline_len_samples = int(1.0 * fs)  # 1 second baseline
+    sta_lta_thresh = 2.0  # Start with threshold 2.0
+    max_thresh = 10.0     # Don't go above this
+    thresh_step = 0.5
+
+    baseline_std = None
+    current_thresh = sta_lta_thresh
+
+    # Search for quiet baseline window in pre-pick region
+    search_end_idx = max(0, pick_idx - int(0.1 * fs))  # End search 0.1s before pick
+
+    while current_thresh <= max_thresh and baseline_std is None:
+        # Try to find a quiet window
+        for start_idx in range(0, max(1, search_end_idx - baseline_len_samples + 1)):
+            end_idx = start_idx + baseline_len_samples
+            if end_idx > search_end_idx:
+                break
+
+            baseline_segment = bp[start_idx:end_idx]
+            if baseline_segment.size == 0:
+                continue
+
+            # Check if this window is quiet enough
+            max_stalta = stalta_max(baseline_segment, fs,
+                                  sta_s=NEG_STALTA_STA_S, lta_s=NEG_STALTA_LTA_S)
+
+            if max_stalta <= current_thresh:
+                # Found a quiet window
+                baseline_std = robust_std(baseline_segment) + 1e-6
+                break
+
+        if baseline_std is None:
+            current_thresh += thresh_step
+
+    # If no quiet window found, use first 1 second as fallback
+    if baseline_std is None:
+        fallback_end = min(baseline_len_samples, search_end_idx)
+        if fallback_end > 0:
+            baseline_std = robust_std(bp[:fallback_end]) + 1e-6
+        else:
+            baseline_std = 1e-6  # Last resort
+
+    # Calculate SNR
+    snr_scalar = float(signal_amplitude / baseline_std)
+    snr_arr = np.full((T,), snr_scalar, dtype=np.float32)  # broadcast across time
 
     feats = [
         bp,            # 0
@@ -461,8 +534,20 @@ def stalta_max(x: np.ndarray, fs: float, sta_s: float, lta_s: float) -> float:
     x = np.abs(x.astype(np.float32, copy=False))
     n_sta = max(1, int(round(sta_s * fs)))
     n_lta = max(n_sta + 1, int(round(lta_s * fs)))
+
+    # Handle case where window is larger than signal
+    if n_lta >= len(x) or n_sta >= len(x):
+        # For very short signals, just return a simple ratio
+        return float(np.mean(x) / (np.mean(x) + 1e-9))
+
     sta = _movmean(x, n_sta)
     lta = _movmean(x, n_lta)
+
+    # Ensure both arrays have the same length (should be the case with mode="same")
+    min_len = min(len(sta), len(lta))
+    sta = sta[:min_len]
+    lta = lta[:min_len]
+
     eps = 1e-9
     ratio = sta / (lta + eps)
     # ignore edges where LTA is tiny
@@ -557,8 +642,9 @@ def choose_windows(T, fs, pick_time, args, full_trace=None, tm_ax=None, duration
 
 
     # --- No pick: choose NEG_K 'noise' windows of the same fixed length L
-    # Fixed length for negative windows
-    L = min(int(round(args.total_win_s * fs)), T)
+    # Fixed length for negative windows - use same duration as positives (pre_s + post_s)
+    negative_duration = args.pre_s + args.post_s
+    L = min(int(round(negative_duration * fs)), T)
     rng = np.random.default_rng()
 
     # Use band-passed signal for all STA/LTA checks on negatives
@@ -680,6 +766,9 @@ def write_shards_for_geometry(args: ETLArgs, geom_id: str):
         pos_written = 0
         neg_written = 0
 
+        # Track previous pick time for traces without picks
+        last_pick_time = None
+
         # collect up to 10 examples for sanity plots
         pos_samples_for_plots = []      # (X, y_idx, fs, meta)
         neg_samples_for_plots = []      # (X, -1,    fs, meta)
@@ -737,6 +826,10 @@ def write_shards_for_geometry(args: ETLArgs, geom_id: str):
             shot_id, pick_time = trace_to_shot_pick[trace_idx]
             has_local = 1 if pick_time > 0.0 else 0
 
+            # Update last_pick_time if this trace has a valid pick
+            if has_local:
+                last_pick_time = pick_time
+
             # choose one or more windows for this trace
             wins = choose_windows(T_full, fs, pick_time, args, full_trace=full, tm_ax=tm_ax, duration=duration)
 
@@ -748,8 +841,25 @@ def write_shards_for_geometry(args: ETLArgs, geom_id: str):
                     seg = pad_or_center_trim(seg, args.target_len)
                 T = seg.size
 
-                # features (noise computed up to noise_end_idx within the crop)
-                X = build_features(seg, fs, noise_end_idx=noise_end_idx)
+                # Determine pick time for SNR calculation
+                if has:
+                    # Trace has pick: use pick time relative to segment start
+                    # pick_time is in seconds from start of full trace
+                    # s0 is sample offset of segment start
+                    seg_pick_time = pick_time - (s0 / fs)
+                else:
+                    # Trace has no pick: use last valid pick time if available
+                    if last_pick_time is not None:
+                        # Use the same relative position from the previous pick
+                        # Assume traces are similar in structure, so use 2/3 as a proxy
+                        # This avoids time alignment issues between different traces
+                        seg_pick_time = (2.0/3.0) * T / fs
+                    else:
+                        # No previous pick available: use 2/3 of segment length
+                        seg_pick_time = None
+
+                # features with new pick-centric SNR
+                X = build_features(seg, fs, pick_time_in_seg=seg_pick_time, seg_start_time=s0/fs)
 
                 if has:  # positive
                     idx = int(np.clip(yidx_in_win, 0, T-1))
@@ -856,8 +966,15 @@ def _plot_feature_stack(xC_T: np.ndarray, fs: float, pick_idx: int = -1,
         ax.set_ylabel(name, fontsize=9)
         ax.grid(alpha=0.2)
     axes[-1].set_xlabel("Time (s)")
+
+    # Extract SNR from channel 6 and add to title
     if title:
-        fig.suptitle(title, fontsize=11)
+        if C > 6:  # SNR is channel 6
+            snr_value = float(xC_T[6, 0])  # SNR is constant across time, so take first sample
+            title_with_snr = f"{title} | SNR: {snr_value:.1f}"
+        else:
+            title_with_snr = title
+        fig.suptitle(title_with_snr, fontsize=11)
     fig.tight_layout(rect=[0, 0.03, 1, 0.97])
     if out_path is not None:
         out_path.parent.mkdir(parents=True, exist_ok=True)
